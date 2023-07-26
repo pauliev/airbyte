@@ -298,6 +298,19 @@ class TransformConfig:
             config = TransformConfig.get_ssh_altered_config(config, port_key="port", host_key="host")
             config["host"] = "127.0.0.1"  # localhost is not supported by dbt-sqlserver.
 
+        ssl_method = config["ssl_method"]["ssl_method"]
+
+        encrypt_map = {
+            "encrypted_trust_server_certificate": "true",
+            "encrypted_verify_certificate": "true",
+            "unencrypted": "false",
+        }
+        trust_cert_map = {
+            "encrypted_trust_server_certificate": "true",
+            "encrypted_verify_certificate": "false",
+            "unencrypted": "true",
+        }
+
         dbt_config = {
             "type": "sqlserver",
             "driver": "ODBC Driver 17 for SQL Server",
@@ -308,6 +321,8 @@ class TransformConfig:
             "user": config["username"],
             "password": config["password"],
             "threads": 8,
+            "encrypt": encrypt_map[ssl_method],
+            "trust_cert": trust_cert_map[ssl_method],
             # "authentication": "sql",
             # "trusted_connection": True,
         }
